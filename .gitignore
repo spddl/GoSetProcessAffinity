@@ -1,0 +1,4 @@
+build.bat
+run.bat
+debug.log
+GoSetProcessAffinity.exe
