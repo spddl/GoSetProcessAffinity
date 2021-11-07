@@ -60,7 +60,7 @@ func main() {
 			var processId = uint32(pidVal)
 			log.Println("processId", processId)
 
-			pHndl, err := windows.OpenProcess(ProcessSetIinformation, false, processId)
+			pHndl, err := windows.OpenProcess(ProcessAllAccess, false, processId)
 			defer windows.CloseHandle(pHndl)
 			if err != nil {
 				log.Panic(err)
@@ -73,6 +73,12 @@ func main() {
 
 			if boost {
 				SetProcessPriorityBoost(pHndl, false) // If the parameter is FALSE, dynamic boosting is enabled.
+			}
+
+			if suspend {
+				NtSuspendProcess(pHndl)
+			} else if resume {
+				NtResumeProcess(pHndl)
 			}
 
 			if len(cpu) != 0 {

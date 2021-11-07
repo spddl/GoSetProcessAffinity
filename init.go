@@ -26,6 +26,8 @@ var (
 	cpu      []int
 
 	logging        bool
+	suspend        bool
+	resume         bool
 	boost          bool
 	priorityClass  int
 	ioPriority     int
@@ -51,8 +53,9 @@ func init() {
 	flag.StringVar(&procFlag, "proc", "", "proc")         // eine Exe die schon läuft
 	flag.StringVar(&exeFlag, "exe", "", "a program/game") // eine Exe die erst gestartet wird
 	flag.StringVar(&cpuFlag, "cpu", "", "0,1,2,3")
-
 	flag.BoolVar(&logging, "logging", false, "logging")
+	flag.BoolVar(&suspend, "suspend", false, "Suspend")
+	flag.BoolVar(&resume, "resume", false, "Resume")
 	flag.BoolVar(&boost, "boost", false, "https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocesspriorityboost")
 	flag.IntVar(&priorityClass, "priorityClass", -1, "https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setpriorityclass")
 	flag.IntVar(&ioPriority, "ioPriority", -1, "ioPriority")

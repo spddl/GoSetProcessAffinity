@@ -19,6 +19,8 @@ var (
 
 	procNtSetInformationProcess   = ntdllDLL.NewProc("NtSetInformationProcess")
 	procNtQueryInformationProcess = ntdllDLL.NewProc("NtQueryInformationProcess")
+	procNtSuspendProcess          = ntdllDLL.NewProc("NtSuspendProcess")
+	procNtResumeProcess           = ntdllDLL.NewProc("NtResumeProcess")
 )
 
 type ULONG uint32
@@ -31,9 +33,12 @@ const ( // IO_PRIORITY_HINT
 	IoPriorityCritical        // Used by memory manager. Not available for applications.
 )
 
-const ProcessSetIinformation = 0x0200
-const ProcessIoPriority = 0x100001
-const ProcessPagePriority = 0x100111
+const (
+	ProcessAllAccess       = 0x1F0FFF
+	ProcessSetIinformation = 0x0200
+	ProcessIoPriority      = 0x21 // https://www.pinvoke.net/default.aspx/ntdll/PROCESSINFOCLASS.html
+	ProcessPagePriority    = 0x27
+)
 
 // https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-setprocessaffinitymask
 func SetProcessAffinityMask(hProcess windows.Handle, dwProcessAffinityMask uint64) error {
@@ -109,6 +114,26 @@ func SetPriorityClass(process syscall.Handle, priorityClass uint32) (err error) 
 		} else {
 			err = syscall.EINVAL
 		}
+	}
+	return
+}
+
+func NtSuspendProcess(process windows.Handle) (err error) {
+	r1, _, e1 := procNtSuspendProcess.Call(
+		uintptr(process))
+
+	if int(r1) == 0 {
+		err = os.NewSyscallError("NtSuspendProcess", e1)
+	}
+	return
+}
+
+func NtResumeProcess(process windows.Handle) (err error) {
+	r1, _, e1 := procNtResumeProcess.Call(
+		uintptr(process))
+
+	if int(r1) == 0 {
+		err = os.NewSyscallError("NtResumeProcess", e1)
 	}
 	return
 }
